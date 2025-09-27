@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: Chat-Management-App
+  server:
+    port: 8081
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CHAT_MANAGE_DB
+    username: chat_app_usern
+    password: ChatApp2025
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: ChatManagementHikariPool
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
+      schema: chat_manage_schema
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: true
+        default_schema: chat_manage_schema
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        register: true
+        service-name: ${spring.application.name}
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+        prefer-ip-address: true
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health,info
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

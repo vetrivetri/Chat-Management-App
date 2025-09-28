@@ -1,16 +1,12 @@
 package com.chat.management.gateway.chatmanagementgateway.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.http.HttpStatus;
+import lombok.*;
+import org.springframework.http.HttpStatus;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GatewayException {
+public class GatewayException extends Exception {
     private HttpStatus httpStatus;
     private String errorCode;
     private String errorMessage;

@@ -1,0 +1,55 @@
+services:
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    ports:
+      - "8500:8500"
+#      - "8600:8600/udp"
+    command: "agent -dev -client=0.0.0.0"
+    
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: CHAT_MANAGE_DB
+      POSTGRES_USER: chat_app_user
+      POSTGRES_PASSWORD: ChatApp2025
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api-gateway:
+    build: ./ChatManagementGateway
+    container_name: chat-api-gateway
+    ports:
+      - "8080:8080"  # Gateway entry point
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - SPRING_APPLICATION_NAME=chat-api-gateway
+      - CONSUL_HOST=${CONSUL_HOST}
+      - CONSUL_PORT=${CONSUL_PORT} 
+    depends_on:
+      - consul
+
+  chat-management-app:
+    build: ./ChatManagementApp
+    container_name: chat-management-app
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env  
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - SPRING_APPLICATION_NAME=ChatManagementApp
+      - CONSUL_HOST=${CONSUL_HOST}
+      - CONSUL_PORT=${CONSUL_PORT}
+    depends_on:
+      - consul
+      - postgres
+
+volumes:
+  pgdata: {} 
+  

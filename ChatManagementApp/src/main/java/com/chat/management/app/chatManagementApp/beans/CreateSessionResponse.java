@@ -7,5 +7,5 @@ import lombok.*;
 @NoArgsConstructor
 public class CreateSessionResponse {
     private String sessionId;
-    private GenericResponse genericErrorResponse;
+    private GenericResponse genericResponse;
 }

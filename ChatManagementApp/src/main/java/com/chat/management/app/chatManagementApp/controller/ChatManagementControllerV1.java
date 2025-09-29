@@ -1,9 +1,7 @@
 package com.chat.management.app.chatManagementApp.controller;
 
-import com.chat.management.app.chatManagementApp.beans.CreateSessionRequest;
-import com.chat.management.app.chatManagementApp.beans.CreateSessionResponse;
-import com.chat.management.app.chatManagementApp.beans.MessageDataUpdateReq;
-import com.chat.management.app.chatManagementApp.beans.UpdateChatSessionInfoReq;
+import com.chat.management.app.chatManagementApp.beans.*;
+import com.chat.management.app.chatManagementApp.config.ChatManagementConstants;
 import com.chat.management.app.chatManagementApp.exception.ChatManagementException;
 import com.chat.management.app.chatManagementApp.service.ChatManagementService;
 import jakarta.validation.Valid;
@@ -34,7 +32,7 @@ public class ChatManagementControllerV1 {
     @PutMapping("/update-msg-chat-session")
     public ResponseEntity<?> updateChatSession(@Valid @RequestBody MessageDataUpdateReq messageDataUpdateReq) throws ChatManagementException{
         chatManagementService.updateChatSession(messageDataUpdateReq);
-        return new ResponseEntity<>(HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(new GenericResponse(ChatManagementConstants.DB_GENERIC_SUCCESS_CODE,ChatManagementConstants.API_CALL_SUCCESS),HttpStatusCode.valueOf(200));
     }
 
     @DeleteMapping("/delete-chat-session/{chatSessionId}")
@@ -56,7 +54,7 @@ public class ChatManagementControllerV1 {
     @PutMapping("/update-session-messages")
     public ResponseEntity<?> updateMsgSession(@Valid @RequestBody UpdateChatSessionInfoReq updateChatSessionInfoReq)throws ChatManagementException{
         chatManagementService.updateMsgSession(updateChatSessionInfoReq);
-        return new ResponseEntity<>(HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(new GenericResponse(ChatManagementConstants.DB_GENERIC_SUCCESS_CODE,ChatManagementConstants.API_CALL_SUCCESS),HttpStatusCode.valueOf(200));
     }
 
 }

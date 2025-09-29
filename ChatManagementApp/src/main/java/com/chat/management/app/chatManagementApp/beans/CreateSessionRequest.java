@@ -3,7 +3,6 @@ package com.chat.management.app.chatManagementApp.beans;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,9 +14,9 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateSessionRequest {
     @JsonAlias("sessionId")
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Session ID must be alphanumeric no special characters allowed")
     private String chatSessionId;
-    @Min(3)
-    @Max(100)
+    @Size(min = 5, max = 100, message = "User Name must be between 5 and 100 characters")
     @JsonAlias("userName")
     private String senderName;
     @NotNull

@@ -1,5 +1,7 @@
 package com.chat.management.gateway.chatmanagementgateway.config;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -12,21 +14,27 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Component
 public class GatewayRateLimiterConfig  implements GatewayFilter {
 
-        private final Map<String, AtomicInteger> requestCounts = new ConcurrentHashMap<>();
-        private final int MAX_REQUESTS_PER_MINUTE = 1000;
+   private final Cache<String, AtomicInteger> requestCounts = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build();
+
+    private final int MAX_REQUESTS_PER_MINUTE = 100;
 
         @Override
         public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
             String clientId = extractClientId(exchange); // e.g., IP or x-api-key
 
-            requestCounts.putIfAbsent(clientId, new AtomicInteger(0));
-            int currentCount = requestCounts.get(clientId).incrementAndGet();
+            AtomicInteger counter = requestCounts.get(clientId, key -> new AtomicInteger(0));
+            int currentCount = counter.incrementAndGet();
 
             if (currentCount > MAX_REQUESTS_PER_MINUTE) {
                 exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
@@ -39,12 +47,9 @@ public class GatewayRateLimiterConfig  implements GatewayFilter {
         }
 
         private String extractClientId(ServerWebExchange exchange) {
-            return exchange.getRequest().getHeaders().getFirst("x-api-client");
+            return Optional.ofNullable(exchange.getRequest().getHeaders().getFirst("x-api-client"))
+                    .orElse("Unknown");
         }
 
-        @Scheduled(fixedRate = 60000)
-        public void resetCounts() {
-            requestCounts.clear();
-        }
 
 }

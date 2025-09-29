@@ -74,7 +74,7 @@ public class ChatManagementServiceImpl implements ChatManagementService {
             List<ChatManagementMessageData> messageDataUpdate =messageDataUpdateReq.getChatMessageInfoList().stream()
                     .map(x -> {
                         ChatManagementMessageData dataBean=  mapper.convertValue(x, ChatManagementMessageData.class);
-                        dataBean.setMsgSentDate(LocalDate.now());
+                        dataBean.setMsgSentDate(x.getMsgSentDate()==null ?LocalDate.now():x.getMsgSentDate());
                         dataBean.setChatSessionHdr(chatHeaderData);
                         return dataBean;
                     }).collect(Collectors.toList());

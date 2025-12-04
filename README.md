@@ -4,10 +4,10 @@ A scalable, Backend for a real-time chat Management application built with Java 
 
 ## 🚀 Features
 
-- RESTful APIs for user and message management
+- RESTfull APIs for user and message management
 - PostgreSQL with schema-based isolation
 - Dockerized for consistent local and cloud environments
-- Secure authentication with JWT
+- Secure authentication with API Header Key
 
 ## 🛠️ Tech Stack
 
@@ -15,7 +15,7 @@ A scalable, Backend for a real-time chat Management application built with Java 
 - Spring Boot 3.2.4
 - Spring Cloud 2023.0.1
 - Consul Disovery Client
-- PostgreSQL 15
+- PostgreSQL 17
 - Docker & Docker Compose
 - Maven
 
@@ -44,7 +44,7 @@ cd ChatManagementApp
 mvn spring-boot:Run
 ```
 
-### 2.2 Running the Entier App Including Consul Client/Postgres DB serer in Docker
+### 2.2 Running the Entier App Including Consul Client/Postgres DB server in Docker
 
 ```bash
 cd Chat-Management-App

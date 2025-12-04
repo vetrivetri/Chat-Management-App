@@ -23,35 +23,35 @@ public class ChatManagementControllerV1 {
     @Autowired
     ChatManagementService chatManagementService;
 
-    @PostMapping("/create-new-session")
+    @PostMapping("/chat-sessions")
     public ResponseEntity<?> createChatSession(@Valid @RequestBody CreateSessionRequest createSessionRequest) throws ChatManagementException {
-        CreateSessionResponse resp = chatManagementService.createChatSession(createSessionRequest);
+        var resp = chatManagementService.createChatSession(createSessionRequest);
         return new ResponseEntity<>(resp, HttpStatusCode.valueOf(200));
     }
 
-    @PutMapping("/update-msg-chat-session")
+    @PutMapping("/chat-sessions/messages")
     public ResponseEntity<?> updateChatSession(@Valid @RequestBody MessageDataUpdateReq messageDataUpdateReq) throws ChatManagementException{
         chatManagementService.updateChatSession(messageDataUpdateReq);
         return new ResponseEntity<>(new GenericResponse(ChatManagementConstants.DB_GENERIC_SUCCESS_CODE,ChatManagementConstants.API_CALL_SUCCESS),HttpStatusCode.valueOf(200));
     }
 
-    @DeleteMapping("/delete-chat-session/{chatSessionId}")
+    @DeleteMapping("/chat-sessions/{chatSessionId}")
     public ResponseEntity<?> deleteChatSession(@NotBlank @PathVariable String chatSessionId ) throws ChatManagementException{
         chatManagementService.deleteChatSession(chatSessionId);
         return new ResponseEntity<>(HttpStatusCode.valueOf(200));
     }
 
-    @GetMapping("/retrieve-chat-session/{chatSessionId}")
+    @GetMapping("/chat-sessions/{chatSessionId}")
     public Page<?> retrieveChatSession(@NotBlank @PathVariable String chatSessionId ,
                                        @RequestParam(defaultValue = "0") int page,
                                        @RequestParam(defaultValue = "10") int size
     ) throws ChatManagementException {
-        Pageable pageable = PageRequest.of(page, size);
+        var pageable = PageRequest.of(page, size);
         return chatManagementService.retrieveChatSession(chatSessionId,pageable);
 
     }
 
-    @PutMapping("/update-session-messages")
+    @PutMapping("/chat-sessions")
     public ResponseEntity<?> updateMsgSession(@Valid @RequestBody UpdateChatSessionInfoReq updateChatSessionInfoReq)throws ChatManagementException{
         chatManagementService.updateMsgSession(updateChatSessionInfoReq);
         return new ResponseEntity<>(new GenericResponse(ChatManagementConstants.DB_GENERIC_SUCCESS_CODE,ChatManagementConstants.API_CALL_SUCCESS),HttpStatusCode.valueOf(200));

@@ -33,7 +33,7 @@ public class ChatManagementExpHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GenericResponse> handleGenericException(Exception ex) {
-            GenericResponse genericResponse = new GenericResponse();
+            var genericResponse = new GenericResponse();
         genericResponse.setResponseCode(ChatManagementConstants.GENERIC_ERROR_CODE);
         genericResponse.setResponseMessage(ex.getMessage());
         return new ResponseEntity<>(genericResponse, HttpStatus.INTERNAL_SERVER_ERROR);

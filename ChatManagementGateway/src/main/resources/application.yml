@@ -29,3 +29,18 @@ api:
 
   rate-limit:
     threshold: 10
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      chatManagementCB:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+
+logging:
+  level:
+    io.github.resilience4j.circuitbreaker: DEBUG
+    reactor.netty.http.client: DEBUG
+

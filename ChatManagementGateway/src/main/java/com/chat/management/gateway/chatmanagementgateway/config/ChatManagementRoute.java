@@ -5,7 +5,10 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Component
 public class ChatManagementRoute  {
@@ -19,8 +22,16 @@ ChatManagementSecurityFilter chatManagementSecurityFilter;
         return builder.routes()
                 .route("chat-management-service",
                         r -> r.path("/v1/chat/**")
-                        .filters(f ->f.filter(chatManagementSecurityFilter.apply(
-                                new AbstractGatewayFilterFactory.NameConfig ())).filter(new GatewayRateLimiterConfig()))
+                        .filters(f ->f.filter(
+                                chatManagementSecurityFilter.apply(
+                                new AbstractGatewayFilterFactory.NameConfig ()))
+                                .filter(gatewayRateLimiterConfig)
+                                .circuitBreaker(config -> config
+                                        .setName("chatManagementCB")
+                                        .setFallbackUri("forward:/fallback/transaction")
+                                        ))
+
+
                         .uri("lb://ChatManagementApp"))
                 .build();
     }

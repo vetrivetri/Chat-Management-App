@@ -24,25 +24,9 @@ import java.util.Map;
 "com.chat.management.app.chatManagementApp.service"})
 @EnableJpaRepositories()
 public class ChatManagementApp {
-    private static final Logger logger = LoggerFactory.getLogger(ChatManagementApp.class);
 
-    @Autowired
-    private ConfigurableEnvironment env;
 	public static void main(String[] args) {
 		SpringApplication.run(ChatManagementApp.class, args);
 	}
-
-
-
-    @PostConstruct
-    public void logAllProperties() {
-        for (PropertySource<?> ps : env.getPropertySources()) {
-            if (ps.getSource() instanceof Map<?, ?> map) {
-                map.forEach((key, value) -> {
-                    logger.info(ps.getName() + " → " + key + " = " + value);
-                });
-            }
-        }
-    }
 
 }

@@ -38,7 +38,7 @@ public class ChatManagementServiceImpl implements ChatManagementService {
     @Override
     public CreateSessionResponse createChatSession(CreateSessionRequest createSessionRequest) throws ChatManagementException {
        try {
-           Optional<ChatSessionHdr> retVal= chatSessionHdrRepository.findByChatSessionId(createSessionRequest.getChatSessionId());
+           var retVal= chatSessionHdrRepository.findByChatSessionId(createSessionRequest.getChatSessionId());
            if(!retVal.isEmpty()){
                throw new ChatManagementException(LocalServiceEnum.SESSION_AVAILABLE_EXP.retVal, ChatManagementConstants.NO_DATA_FOUND);
            }
@@ -47,7 +47,7 @@ public class ChatManagementServiceImpl implements ChatManagementService {
            }
 
 
-           ChatSessionHdr chatHdr=  mapper.convertValue(createSessionRequest, ChatSessionHdr.class);
+           var chatHdr=  mapper.convertValue(createSessionRequest, ChatSessionHdr.class);
            chatHdr.setCreatedDt(LocalDate.now());
            chatSessionHdrRepository.save(chatHdr);
        }catch(Exception ex){
@@ -64,14 +64,14 @@ public class ChatManagementServiceImpl implements ChatManagementService {
         try {
 
 
-           Optional<ChatSessionHdr> retVal= chatSessionHdrRepository.findByChatSessionId(messageDataUpdateReq.getChatSessionId());
+           var retVal= chatSessionHdrRepository.findByChatSessionId(messageDataUpdateReq.getChatSessionId());
             if(retVal.isEmpty()){
                 throw new ChatManagementException(LocalServiceEnum.NO_DATA_FOUND.retVal, ChatManagementConstants.NO_DATA_FOUND);
             }
             final ChatSessionHdr chatHeaderData = retVal.get();
 
 
-            List<ChatManagementMessageData> messageDataUpdate =messageDataUpdateReq.getChatMessageInfoList().stream()
+            var messageDataUpdate =messageDataUpdateReq.getChatMessageInfoList().stream()
                     .map(x -> {
                         ChatManagementMessageData dataBean=  mapper.convertValue(x, ChatManagementMessageData.class);
                         dataBean.setMsgSentDate(x.getMsgSentDate()==null ?LocalDate.now():x.getMsgSentDate());
@@ -92,10 +92,16 @@ public class ChatManagementServiceImpl implements ChatManagementService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackOn = ChatManagementException.class)
     public void deleteChatSession(String chatSessionId) throws ChatManagementException {
         try{
+            var retVal= chatSessionHdrRepository.findByChatSessionId(chatSessionId);
+            if(retVal.isEmpty()){
+                throw new ChatManagementException(LocalServiceEnum.NO_DATA_FOUND.retVal, ChatManagementConstants.NO_DATA_FOUND);
+            }
             chatSessionHdrRepository.deleteByChatSessionId(chatSessionId);
+        }catch (ChatManagementException chEx){
+            throw  chEx;
         }catch (SQLException sqEx){
             logger.error("Db failure", sqEx.getMessage());
             throw new ChatManagementException(LocalServiceEnum.DATABASE_ERROR.retVal, ChatManagementConstants.DB_GENERIC_EXCEPTION);
@@ -108,7 +114,7 @@ public class ChatManagementServiceImpl implements ChatManagementService {
     @Override
     public Page<ChatManagementMessageData> retrieveChatSession(String chatSessionId, Pageable pageReq) throws ChatManagementException {
         try{
-            Optional<ChatSessionHdr> retVal= chatSessionHdrRepository.findByChatSessionId(chatSessionId);
+            var retVal= chatSessionHdrRepository.findByChatSessionId(chatSessionId);
 
             if(retVal.isEmpty()){
                 throw new ChatManagementException(LocalServiceEnum.NO_DATA_FOUND.retVal, ChatManagementConstants.NO_DATA_FOUND);
@@ -131,7 +137,7 @@ public class ChatManagementServiceImpl implements ChatManagementService {
     @Override
     public void updateMsgSession(UpdateChatSessionInfoReq updateChatSessionInfoReq) throws ChatManagementException {
         try{
-            Optional<ChatSessionHdr> retVal= chatSessionHdrRepository.findByChatSessionId(updateChatSessionInfoReq.getSessionId());
+            var retVal= chatSessionHdrRepository.findByChatSessionId(updateChatSessionInfoReq.getSessionId());
             if(retVal.isEmpty()){
                 throw new ChatManagementException(LocalServiceEnum.NO_DATA_FOUND.retVal, ChatManagementConstants.NO_DATA_FOUND);
             }
